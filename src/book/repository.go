@@ -1,6 +1,8 @@
 package book
 
 import (
+	"errors"
+
 	"gorm.io/gorm"
 )
 
@@ -29,5 +31,28 @@ func (r *bookRepository) GetBookById(id int) (*Book, error) {
 }
 
 func (r *bookRepository) SaveBook(book Book) error {
-	return r.db.Create(&book).Error
+	result := r.db.Create(&book)
+	return result.Error
+}
+
+func (r *bookRepository) DeleteBook(id int) error {
+	result := r.db.Where("id = ?", id).Delete(&Book{})
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return errors.New("Book Not Found")
+	}
+	return nil
+}
+
+func (r *bookRepository) UpdateBook(book Book) error {
+	result := r.db.Where("codeBook = ?", book).Save(&book)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return errors.New("data not found")
+	}
+	return nil
 }
