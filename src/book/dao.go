@@ -1,11 +1,10 @@
 package book
 
 type Book struct {
-	Id            int    `json:"id"`
-	Code_Book     string `json:"codeBook"`
-	Title_Book    string `json:"titleBook"`
-	Author        string `json:"author"`
-	Realease_Year int    `json:"year"`
+	Code_Book     string `json:"codeBook" gorm:"column:code_book"`
+	Title_Book    string `json:"titleBook" gorm:"column:title_book"`
+	Author        string `json:"author" gorm:"column:author"`
+	Realease_Year int    `json:"year" gorm:"column:realease_year"`
 }
 
 func (Book) TableName() string {

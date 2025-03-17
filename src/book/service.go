@@ -17,8 +17,8 @@ func (s *bookService) GetAllBooks() ([]Book, error) {
 	return s.repo.GetAllBook()
 }
 
-func (s *bookService) GetBookById(id int) (*Book, error) {
-	return s.repo.GetBookById(id)
+func (s *bookService) GetBookByCodeBook(code string) (*Book, error) {
+	return s.repo.GetBookByCodeBook(code)
 }
 
 func (s *bookService) AddBook(book Book) error {
@@ -26,8 +26,8 @@ func (s *bookService) AddBook(book Book) error {
 	return s.repo.SaveBook(book)
 }
 
-func (s *bookService) DeleteBook(id int) error {
-	return s.repo.DeleteBook(id)
+func (s *bookService) DeleteBook(code string) error {
+	return s.repo.DeleteBook(code)
 }
 
 func (s *bookService) UpdateBook(book Book) error {

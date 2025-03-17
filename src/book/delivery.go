@@ -1,11 +1,12 @@
 package book
 
 import (
+	"errors"
 	"go-project-management-book/helper"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type BookHandler struct {
@@ -38,12 +39,24 @@ func (h *BookHandler) GetAllBooks(c *gin.Context) {
 	helper.SendResponseSuccess(c, resp)
 }
 
-func (h *BookHandler) GetBookById(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
-	book, err := h.service.GetBookById(id)
+func (h *BookHandler) GetBookByCodeBook(c *gin.Context) {
+	code := c.Param("codeBook")
+	book, err := h.service.GetBookByCodeBook(code)
 	if err != nil {
-		helper.SendResponseError(c, helper.ErrNotFound)
-		c.JSON(http.StatusNotFound, gin.H{"message": "Book Not Found"})
+
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			helper.SendResponseError(c, helper.ErrNotFound)
+			return
+		}
+
+		resp := helper.ErrorStruct{
+			Code:        helper.RCGeneralError,
+			HTTPCode:    http.StatusInternalServerError,
+			Description: helper.DescErrorGeneral,
+			Message:     err.Error(),
+		}
+		helper.SendResponseError(c, resp)
+
 	}
 	resp := helper.Response{
 		ResponseCode: helper.RCSuccess,
@@ -81,12 +94,17 @@ func (h *BookHandler) AddBook(c *gin.Context) {
 }
 
 func (h *BookHandler) UpdateBook(c *gin.Context) {
+	code := c.Param("codeBook")
+
 	var book Book
 	if err := c.ShouldBindJSON(&book); err != nil {
 		helper.SendResponseError(c, helper.ErrBadRequest)
 		return
 	}
-	if err := h.service.UpdateBook(book); err != nil {
+
+	book.Code_Book = code
+	err := h.service.UpdateBook(book)
+	if err != nil {
 		resp := helper.ErrorStruct{
 			Code:        helper.RCGeneralError,
 			HTTPCode:    http.StatusInternalServerError,
@@ -107,19 +125,9 @@ func (h *BookHandler) UpdateBook(c *gin.Context) {
 }
 
 func (h *BookHandler) DeleteBook(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		resp := helper.ErrorStruct{
-			Code:        helper.RCGeneralError,
-			HTTPCode:    http.StatusInternalServerError,
-			Description: helper.DescriptionFailed,
-			Message:     err.Error(),
-		}
-		helper.SendResponseError(c, resp)
-		return
-	}
+	code := c.Param("codeBook")
 
-	err = h.service.DeleteBook(id)
+	err := h.service.DeleteBook(code)
 	if err != nil {
 		helper.SendResponseError(c, helper.ErrNotFound)
 		return

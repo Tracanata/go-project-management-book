@@ -20,13 +20,12 @@ func (r *bookRepository) GetAllBook() ([]Book, error) {
 	return books, result.Error
 }
 
-func (r *bookRepository) GetBookById(id int) (*Book, error) {
+func (r *bookRepository) GetBookByCodeBook(code string) (*Book, error) {
 	var book Book
-	result := r.db.First(&book, id)
+	result := r.db.Where("code_book = ?", code).First(&book)
 	if result.Error != nil {
 		return nil, result.Error
 	}
-
 	return &book, nil
 }
 
@@ -35,8 +34,8 @@ func (r *bookRepository) SaveBook(book Book) error {
 	return result.Error
 }
 
-func (r *bookRepository) DeleteBook(id int) error {
-	result := r.db.Where("id = ?", id).Delete(&Book{})
+func (r *bookRepository) DeleteBook(code string) error {
+	result := r.db.Where("code_book = ?", code).Delete(&Book{})
 	if result.Error != nil {
 		return result.Error
 	}
@@ -47,12 +46,10 @@ func (r *bookRepository) DeleteBook(id int) error {
 }
 
 func (r *bookRepository) UpdateBook(book Book) error {
-	result := r.db.Where("codeBook = ?", book).Save(&book)
-	if result.Error != nil {
-		return result.Error
+	var checkBook Book
+	err := r.db.Where("code_book = ?", book.Code_Book).First(&checkBook).Error
+	if err != nil {
+		return err
 	}
-	if result.RowsAffected == 0 {
-		return errors.New("data not found")
-	}
-	return nil
+	return r.db.Model(&Book{}).Where("code_book = ?", book.Code_Book).Updates(book).Error
 }
