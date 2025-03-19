@@ -22,7 +22,7 @@ func (h *UserHandler) RegisterUser(c *gin.Context) {
 		return
 	}
 
-	if err := h.service.Register(user); err != nil {
+	if err := h.service.RegisterUser(&user); err != nil {
 		resp := helper.ErrorStruct{
 			Code:        helper.RCGeneralError,
 			HTTPCode:    http.StatusInternalServerError,
@@ -36,7 +36,9 @@ func (h *UserHandler) RegisterUser(c *gin.Context) {
 		ResponseCode: helper.RCSuccess,
 		Description:  helper.DescriptionSuccess,
 		Message:      http.StatusText(http.StatusOK),
-		Data:         nil,
+		Data: map[string]interface{}{
+			"username": user.Username,
+		},
 	}
 
 	helper.SendResponseSuccess(c, resp)
