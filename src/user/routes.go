@@ -7,5 +7,6 @@ func RegisterRoute(r *gin.Engine, handler *UserHandler) {
 	{
 		userRoutes.POST("/register", handler.RegisterUser)
 		userRoutes.POST("/login", handler.LoginUser)
+		userRoutes.GET("/profile/:username", handler.GetProfile)
 	}
 }

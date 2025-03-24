@@ -35,3 +35,13 @@ func (repo *userRepository) Login(username string) (*User, error) {
 
 	return &user, nil
 }
+
+func (repo *userRepository) GetDataUser(username string) (*User, error) {
+	var user User
+	sql := "SELECT name, email, username, role FROM user WHERE username = ?"
+	result := repo.db.Raw(sql, username).First(&user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &user, nil
+}

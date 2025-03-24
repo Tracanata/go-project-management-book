@@ -1,10 +1,12 @@
 package user
 
 import (
+	"errors"
 	"go-project-management-book/helper"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type UserHandler struct {
@@ -65,5 +67,32 @@ func (dlv *UserHandler) LoginUser(ctx *gin.Context) {
 		Data:         user,
 	}
 
+	helper.SendResponseSuccess(ctx, resp)
+}
+
+func (dlv *UserHandler) GetProfile(ctx *gin.Context) {
+	username := ctx.Param("username")
+	user, err := dlv.service.GetProfile(username)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			helper.SendResponseError(ctx, helper.ErrNotFound)
+			return
+		}
+
+		resp := helper.ErrorStruct{
+			Code:        helper.RCGeneralError,
+			HTTPCode:    http.StatusInternalServerError,
+			Description: helper.DescErrorGeneral,
+			Message:     err.Error(),
+		}
+		helper.SendResponseError(ctx, resp)
+		return
+	}
+	resp := helper.Response{
+		ResponseCode: helper.RCSuccess,
+		Description:  helper.DescriptionSuccess,
+		Message:      http.StatusText(http.StatusOK),
+		Data:         user,
+	}
 	helper.SendResponseSuccess(ctx, resp)
 }

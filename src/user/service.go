@@ -6,6 +6,7 @@ import (
 	"math/rand/v2"
 
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type userService struct {
@@ -42,6 +43,24 @@ func (svc *userService) LoginUser(username, password string) (*RespSuccessLogin,
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return nil, errors.New("password salah")
+	}
+
+	resp := &RespSuccessLogin{
+		Username: user.Username,
+		Name:     user.Name,
+		Email:    user.Email,
+		Role:     user.Role,
+	}
+	return resp, nil
+}
+
+func (svc *userService) GetProfile(username string) (*RespSuccessLogin, error) {
+	user, err := svc.repo.GetDataUser(username)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, gorm.ErrRecordNotFound
+		}
+		return nil, err
 	}
 
 	resp := &RespSuccessLogin{
