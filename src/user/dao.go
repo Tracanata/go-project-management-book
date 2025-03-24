@@ -15,3 +15,14 @@ type User struct {
 func (User) TableName() string {
 	return "user"
 }
+
+type Token struct {
+	Id         int       `json:"id"`
+	Token      string    `json:"token"`
+	User_id    string    `json:"userid"`
+	Created_at time.Time `json:"created_at" gorm:"autoCreateTime"`
+}
+
+func (Token) TableName() string {
+	return "token"
+}
