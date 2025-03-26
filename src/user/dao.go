@@ -15,3 +15,15 @@ type User struct {
 func (User) TableName() string {
 	return "user"
 }
+
+type Session struct {
+	Id         int       `json:"id"`
+	Username   string    `json:"username"`
+	Token      string    `json:"token"`
+	Expires_at time.Time `json:"expires"`
+	Created_at time.Time `json:"created_at"`
+}
+
+func (Session) TableName() string {
+	return "session"
+}

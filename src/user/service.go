@@ -32,18 +32,27 @@ func (svc *userService) RegisterUser(user *User) error {
 }
 
 func (svc *userService) LoginUser(username, password string) (*RespSuccessLogin, error) {
+	// session, err := svc.repo.GetActiveSession(username)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// if session != nil {
+	// 	return nil, errors.New("User Sedang Login")
+	// }
+
 	user, err := svc.repo.Login(username)
 	if err != nil {
 		return nil, errors.New("User tidak ditemukan")
 	}
 
-	if user == nil {
-		return nil, errors.New("User tidak ditemukan atau tidak valid")
-	}
-
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return nil, errors.New("password salah")
 	}
+
+	// token := fmt.Sprintf("%s-%d", username, time.Now().Unix())
+
+	// svc.repo.SetSession(username, token, 5*time.Minute)
 
 	resp := &RespSuccessLogin{
 		Username: user.Username,

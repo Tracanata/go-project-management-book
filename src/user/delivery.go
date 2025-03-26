@@ -56,6 +56,9 @@ func (dlv *UserHandler) LoginUser(ctx *gin.Context) {
 
 	user, err := dlv.service.LoginUser(req.Username, req.Password)
 	if err != nil {
+		if err.Error() == "user sedang login" {
+			helper.SendResponseError(ctx, helper.ErrAlreadyLogined)
+		}
 		helper.SendResponseError(ctx, helper.ErrLoginFailed)
 		return
 	}

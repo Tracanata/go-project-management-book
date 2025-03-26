@@ -1,6 +1,7 @@
 package book
 
 import (
+	"errors"
 	"fmt"
 	"math/rand/v2"
 )
@@ -17,8 +18,20 @@ func (s *bookService) GetAllBooks() ([]Book, error) {
 	return s.repo.GetAllBook()
 }
 
-func (s *bookService) GetBookByCodeBook(code string) (*Book, error) {
-	return s.repo.GetBookByCodeBook(code)
+func (s *bookService) GetBookByCodeBook(code string) (*RespDataBook, error) {
+	book, err := s.repo.GetBookByCodeBook(code)
+
+	if err != nil {
+		return nil, errors.New("data buku tidak ada")
+	}
+
+	resp := &RespDataBook{
+		Code_Book:  book.Code_Book,
+		Title_Book: book.Title_Book,
+		Author:     book.Author,
+		Stock:      book.Stock,
+	}
+	return resp, nil
 }
 
 func (s *bookService) AddBook(book Book) error {

@@ -14,7 +14,8 @@ const (
 )
 
 var (
-	ErrBadRequest  = ErrorStruct{Code: "BAD01", HTTPCode: http.StatusBadRequest, Description: DescriptionFailed, Message: "bad request"}
-	ErrNotFound    = ErrorStruct{Code: "DT01", HTTPCode: http.StatusNotFound, Description: DescriptionFailed, Message: "data not found"}
-	ErrLoginFailed = ErrorStruct{Code: "AUTHXX", HTTPCode: http.StatusUnauthorized, Description: DescriptionFailed, Message: "gagal login"}
+	ErrBadRequest     = ErrorStruct{Code: "BAD01", HTTPCode: http.StatusBadRequest, Description: DescriptionFailed, Message: "bad request"}
+	ErrNotFound       = ErrorStruct{Code: "DT01", HTTPCode: http.StatusNotFound, Description: DescriptionFailed, Message: "data not found"}
+	ErrLoginFailed    = ErrorStruct{Code: "AUTHXX", HTTPCode: http.StatusUnauthorized, Description: DescriptionFailed, Message: "gagal login"}
+	ErrAlreadyLogined = ErrorStruct{Code: "USXX", HTTPCode: 0000, Description: DescriptionFailed, Message: "user sedang login"}
 )
