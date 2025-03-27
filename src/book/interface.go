@@ -6,6 +6,8 @@ type BookRepository interface {
 	SaveBook(book Book) error
 	DeleteBook(code string) error
 	UpdateBook(book Book) error
+	GetBookStock(id int) (int, error)
+	DecreaseBookStock(id int) error
 }
 
 type BookService interface {

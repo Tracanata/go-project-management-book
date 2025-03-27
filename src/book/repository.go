@@ -6,21 +6,21 @@ import (
 	"gorm.io/gorm"
 )
 
-type bookRepository struct {
+type IBookRepository struct {
 	db *gorm.DB
 }
 
 func NewBookRepository(db *gorm.DB) BookRepository {
-	return &bookRepository{db: db}
+	return &IBookRepository{db: db}
 }
 
-func (r *bookRepository) GetAllBook() ([]Book, error) {
+func (r *IBookRepository) GetAllBook() ([]Book, error) {
 	var books []Book
 	result := r.db.Find(&books)
 	return books, result.Error
 }
 
-func (r *bookRepository) GetBookByCodeBook(code string) (*Book, error) {
+func (r *IBookRepository) GetBookByCodeBook(code string) (*Book, error) {
 	var book Book
 	result := r.db.Where("code_book = ?", code).First(&book)
 	if result.Error != nil {
@@ -29,12 +29,12 @@ func (r *bookRepository) GetBookByCodeBook(code string) (*Book, error) {
 	return &book, nil
 }
 
-func (r *bookRepository) SaveBook(book Book) error {
+func (r *IBookRepository) SaveBook(book Book) error {
 	result := r.db.Create(&book)
 	return result.Error
 }
 
-func (r *bookRepository) DeleteBook(code string) error {
+func (r *IBookRepository) DeleteBook(code string) error {
 	result := r.db.Where("code_book = ?", code).Delete(&Book{})
 	if result.Error != nil {
 		return result.Error
@@ -45,11 +45,24 @@ func (r *bookRepository) DeleteBook(code string) error {
 	return nil
 }
 
-func (r *bookRepository) UpdateBook(book Book) error {
+func (r *IBookRepository) UpdateBook(book Book) error {
 	var checkBook Book
 	err := r.db.Where("code_book = ?", book.Code_Book).First(&checkBook).Error
 	if err != nil {
 		return err
 	}
 	return r.db.Model(&Book{}).Where("code_book = ?", book.Code_Book).Updates(book).Error
+}
+
+func (r *IBookRepository) GetBookStock(id int) (int, error) {
+	var book Book
+	err := r.db.Select("stock").Where("id = ?", id).First(&book).Error
+	if err != nil {
+		return 0, err
+	}
+	return book.Stock, nil
+}
+
+func (r *IBookRepository) DecreaseBookStock(id int) error {
+	return r.db.Model(&Book{}).Where("id = ? AND stock > 0", id).UpdateColumn("stock", gorm.Expr("stock - 1")).Error
 }
